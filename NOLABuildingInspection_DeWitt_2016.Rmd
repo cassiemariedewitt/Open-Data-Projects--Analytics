@@ -1,0 +1,333 @@
+---
+title: "NOLA Permit Analysis"
+author: "Cassie DeWitt"
+date: "April 14, 2016"
+output: word_document
+---
+########################Data Cleaning#############################
+
+#Step 1: Removing Negative Numbers
+
+#Both building area and construction value have negative numbers. 
+#Next, I will investigate the mean of the non-negative values. Following this, I will replace the nonzero values with the mean and give the variable a different name. 
+#Calculating mean of construction value
+mean (NOLA_Permits$ConstrVal[which(NOLA_Permits$ConstrVal!=0)])
+
+#Calculating mean of building area
+mean (NOLA_Permits$BldgArea[which(NOLA_Permits$BldgArea!=0)])
+
+#The following variables contain negative numbers: UnpaidFees, TotalFees, BldgArea, ConstrVal
+#I have decided to not work with negative numbers because I am assuming they are 0's
+#Changing the negative numbers to 0's
+
+NOLA_Permits$UnpaidFees[NOLA_Permits$UnpaidFees<0]=0
+NOLA_Permits$TotalFees[NOLA_Permits$TotalFees<0]=0
+NOLA_Permits$BldgArea[NOLA_Permits$BldgArea<0]=4740.941
+NOLA_Permits$ConstrVal[NOLA_Permits$ConstrVal<0]=162748.7
+
+#Further investigating data quality:
+plot(NOLA_Permits$UnpaidFees)
+plot(NOLA_Permits$TotalFees)
+plot(NOLA_Permits$BldgArea)
+plot(NOLA_Permits$ConstrVal)
+
+#There is a lot of variance. In particular, as a few of the models below demonstrate, there are
+#data quality concerns that need to be paid attention to. 
+
+###################Data Preparation###############################
+#Step 2a: Changing categorical variables to numerical variables for both code
+
+#I have some categorical variables. I need to change them to numeric variables
+#The variables are the following: ACCS, BRAC, COTM, CSSN, CUSE, DARV, DEMI, DEMO, EANN, ECOA, EFAI, EFLO, EGEN, EMER, ERPR, ERVW, ESGN, ETMP, EVAC, FAIR, FGAS, HOIS, HOME, HOOD, HVAC, LEAD, LOOP, MECH, MMAN, MOVG, MOVS, NEWC, NOWK, PKGL, PLMB, POOL, POTF, REPR, RNVN, RNVS, ROTF, RVWS, SATT, SBIL, SBNR, SERV, SMRL, SOLR, STAG
+
+#Creating MECH dummy variable: 
+MECH_Code<-ifelse(NOLA_Permits$Code=="MECH",1,0)
+
+#Creating ACCS dummy variable:
+ACCS_Code<-ifelse(NOLA_Permits$Code=="ACCS",1,0)
+
+#Creating BRAC dummy variable:
+BRAC_Code<-ifelse(NOLA_Permits$Code=="BRAC",1,0)
+
+#Creating CTOM dummy variable:
+CTOM_Code<-ifelse(NOLA_Permits$Code=="CTOM",1,0)
+
+#Creating CSSN dummy variable:
+CSSN_Code<-ifelse(NOLA_Permits$Code=="CSSN",1,0)
+
+#Creating CUSE dummy variable:
+CUSE_Code<-ifelse(NOLA_Permits$Code=="CUSE",1,0)
+
+#Creating DARV dummy variable:
+DARV_Code<-ifelse(NOLA_Permits$Code=="DARV",1,0)
+
+#Creating DEMI dummy variable:
+DEMI_Code<-ifelse(NOLA_Permits$Code=="DEMI",1,0)
+
+#Creating DEMO dummy variable:
+DEMO_Code<-ifelse(NOLA_Permits$Code=="DEMO",1,0)
+
+#Creating EANN dummy variable:
+EANN_Code<-ifelse(NOLA_Permits$Code=="EANN",1,0)
+
+#Creating ECOA dummy variable:
+ECOA_Code<-ifelse(NOLA_Permits$Code=="ECOA",1,0)
+
+#Creating EFAI dummy variable:
+EFAI_Code<-ifelse(NOLA_Permits$Code=="EFAI",1,0)
+
+#Creating EFLO dummy variable:
+EFLO_Code<-ifelse(NOLA_Permits$Code=="EFLO",1,0)
+
+#Creating EGEN dummy variable:
+EGEN_Code<-ifelse(NOLA_Permits$Code=="EGEN",1,0)
+
+#Creating EMER dummy variable:
+EMER_Code<-ifelse(NOLA_Permits$Code=="EMER",1,0)
+
+#Creating ERPR dummy variable:
+ERPR_Code<-ifelse(NOLA_Permits$Code=="ERPR",1,0)
+
+#Creating ERVW dummy variable:
+ERVW_Code<-ifelse(NOLA_Permits$Code=="ERVW",1,0)
+
+#Creating ESGN dummy variable:
+ESGN_Code<-ifelse(NOLA_Permits$Code=="ESGN",1,0)
+
+#Creating ETMP dummy variable:
+ETMP_Code<-ifelse(NOLA_Permits$Code=="ETMP",1,0)
+
+#Creating EVAC dummy variable:
+EVAC_Code<-ifelse(NOLA_Permits$Code=="EVAC",1,0)
+
+#Creating FAIR dummy variable:
+FAIR_Code<-ifelse(NOLA_Permits$Code=="FAIR",1,0)
+
+#Creating FGAS dummy variable:
+FGAS_Code<-ifelse(NOLA_Permits$Code=="FGAS",1,0)
+
+#Creating HOIS dummy variable:
+HOIS_Code<-ifelse(NOLA_Permits$Code=="HOIS",1,0)
+
+#Creating HOME dummy variable
+HOME_Code<-ifelse(NOLA_Permits$Code=="HOME",1,0)
+
+#Creating HOOD dummy variable
+HOOD_Code<-ifelse(NOLA_Permits$Code=="HOOD",1,0)
+
+#Creating HVAC dummy variable
+HVAC_Code<-ifelse(NOLA_Permits$Code=="HVAC",1,0)
+
+#Creating LEAD dummy variable
+LEAD_Code<-ifelse(NOLA_Permits$Code=="LEAD",1,0)
+
+#Creating LOOP dummy variable
+LOOP_Code<-ifelse(NOLA_Permits$Code=="LOOP",1,0)
+
+#Creating MMAN dummy variable
+MMAN_Code<-ifelse(NOLA_Permits$Code=="MMAN",1,0)
+
+#Creating MOVG dummy variable
+MOVG_Code<-ifelse(NOLA_Permits$Code=="MOVG",1,0)
+
+#Creating MOVS dummy variable
+MOVS_Code<-ifelse(NOLA_Permits$Code=="MOVS",1,0)
+
+#Creating NEWC dummy variable
+NEWC_Code<-ifelse(NOLA_Permits$Code=="NEWC",1,0)
+
+#Creating NOWK dummy variable
+NOWK_Code<-ifelse(NOLA_Permits$Code=="NOWK",1,0)
+
+#Creating PKGL dummy variable
+PKGL_Code<-ifelse(NOLA_Permits$Code=="PKGL",1,0)
+
+#Creating PLMB dummy variable
+PLMB_Code<-ifelse(NOLA_Permits$Code=="PLMB",1,0)
+
+#Creating POOL dummy variable
+POOL_Code<-ifelse(NOLA_Permits$Code=="POOL",1,0)
+
+#Creating POTF dummy variable
+POTF_Code<-ifelse(NOLA_Permits$Code=="POTF",1,0)
+
+#Creating REPR dummy variable
+REPR_Code<-ifelse(NOLA_Permits$Code=="REPR",1,0)
+
+#Creating RNVN dummy variable
+RNVN_Code<-ifelse(NOLA_Permits$Code=="RNVN",1,0)
+
+#Creating RNVS dummy variable
+RNVS_Code<-ifelse(NOLA_Permits$Code=="RNVS",1,0)
+
+#Creating ROTF dummy variable
+ROTF_Code<-ifelse(NOLA_Permits$Code=="ROTF",1,0)
+
+#Creating RVWS dummy variable
+RVWS_Code<-ifelse(NOLA_Permits$Code=="RVWS",1,0)
+
+#Creating SATT dummy variable
+SATT_Code<-ifelse(NOLA_Permits$Code=="SATT",1,0)
+
+#Creating SBIL dummy variable
+SBIL_Code<-ifelse(NOLA_Permits$Code=="SBIL",1,0)
+
+#Creating SBNR dummy variable
+SBNR_Code<-ifelse(NOLA_Permits$Code=="SBNR",1,0)
+
+#Creating SERV dummy variable
+SERV_Code<-ifelse(NOLA_Permits$Code=="SERV",1,0)
+
+#Creating SMRL dummy variable
+SMRL_Code<-ifelse(NOLA_Permits$Code=="SMRL",1,0)
+
+#Creating SOLR dummy variable
+SOLR_Code<-ifelse(NOLA_Permits$Code=="SOLR",1,0)
+
+#Creating STAG dummy variable
+STAG_Code<-ifelse(NOLA_Permits$Code=="STAG",1,0)
+
+#Creating TRLR dummy variable
+TRLR_Code<-ifelse(NOLA_Permits$Code=="TRLR",1,0)
+
+#Step 2b: changing categorical variables to numerical variables for land use
+
+#Creating the land use dummy variables
+ACC_LandUse<-ifelse(NOLA_Permits$LandUseShort=="ACC",1,0)
+COMM_LandUse<-ifelse(NOLA_Permits$LandUseShort=="COMM",1,0)
+HALF_LandUse<-ifelse(NOLA_Permits$LandUseShort=="HALF",1,0)
+MIXD_LandUse<-ifelse(NOLA_Permits$LandUseShort=="MIXD",1,0)
+RMF_LandUse<-ifelse(NOLA_Permits$LandUseShort=="RMF",1,0)
+RSF2_LandUse<-ifelse(NOLA_Permits$LandUseShort=="RSF2",1,0)
+RSFA_LandUse<-ifelse(NOLA_Permits$LandUseShort=="RSFA",1,0)
+RSFD_LandUse<-ifelse(NOLA_Permits$LandUseShort=="RSFD",1,0)
+SUMF_LandUse<-ifelse(NOLA_Permits$LandUseShort=="SUMF",1,0)
+UNK_LandUse<-ifelse(NOLA_Permits$LandUseShort=="UNK",1,0)
+
+###################Step 3: Introductory Regressions###############
+
+#I am now starting to run regressions. I first want to find out the zero-order correlation between the dependent variable and each independent variable
+#I will identify these regressions by the independent variable being regressed
+
+#Regression of Total Fees
+reg.TotalFees       <- lm(NOLA_Permits$NumberDays ~ NOLA_Permits$TotalFees, data=NOLA_Permits)
+summary(reg.TotalFees)
+
+#Regression of TotalInspections
+reg.TotalInspections       <- lm(NOLA_Permits$NumberDays ~ NOLA_Permits$TotalInspections, data=NOLA_Permits)
+summary(reg.TotalInspections)
+
+#Regression of Code
+reg.Code      <- lm(NOLA_Permits$NumberDays ~ ACCS_Code+BRAC_Code+CTOM_Code+CSSN_Code+CUSE_Code+DARV_Code+DEMI_Code+DEMO_Code+EANN_Code+ECOA_Code+EFAI_Code+EFLO_Code+EGEN_Code+EMER_Code+ERPR_Code+ERVW_Code+ESGN_Code+ETMP_Code+EVAC_Code+FAIR_Code+FGAS_Code+HOIS_Code+HOME_Code+HOOD_Code+HVAC_Code+LEAD_Code+LOOP_Code+MECH_Code+MMAN_Code+MOVG_Code+MOVS_Code+NEWC_Code+NOWK_Code+PKGL_Code+PLMB_Code+POOL_Code+POTF_Code+REPR_Code+RNVN_Code+RNVS_Code+ROTF_Code+RVWS_Code+SATT_Code+SBIL_Code+SBNR_Code+SERV_Code+SMRL_Code+SOLR_Code+STAG_Code+TRLR_Code, data=NOLA_Permits)
+summary(reg.Code)
+
+#Regression of UnpaidFees
+reg.UnpaidFees       <- lm(NOLA_Permits$NumberDays ~ NOLA_Permits$UnpaidFees, data=NOLA_Permits)
+summary(reg.UnpaidFees)
+
+#Regression of BldgArea
+reg.BldgArea       <- lm(NOLA_Permits$NumberDays ~ NOLA_Permits$BldgArea, data=NOLA_Permits)
+summary(reg.BldgArea)
+
+#Regression of ConstrVal
+reg.ConstrVal       <- lm(NOLA_Permits$NumberDays ~ NOLA_Permits$ConstrVal, data=NOLA_Permits)
+summary(reg.ConstrVal)
+
+#Regression of TotalInspections
+reg.TotalInspections       <- lm(NOLA_Permits$NumberDays ~ NOLA_Permits$TotalInspections, data=NOLA_Permits)
+summary(reg.TotalInspections)
+
+#Regression of LandUse
+reg.LandUse       <- lm(NOLA_Permits$NumberDays ~ ACC_LandUse+COMM_LandUse+HALF_LandUse+MIXD_LandUse+RMF_LandUse+RSF2_LandUse+RSFD_LandUse+SUMF_LandUse+UNK_LandUse, data=NOLA_Permits)
+summary(reg.LandUse)
+
+#####################Creating Graphs of Correlations#############
+##Graph 1: Graph of NumberDays and TotalFees
+dev.off()
+ggplot(NOLA_Permits, aes(x=NumberDays,y=TotalFees)) + geom_point()
+ggplot(NOLA_Permits, aes(x=NumberDays,y=TotalFees)) + geom_point() +geom_smooth()
+
+#Graph 1B: Attempting to correct data quality concerns
+dummy.TotalFees<-log(NOLA_Permits$TotalFees+1)
+dummy.NumberDays<-log(NOLA_Permits$NumberDays+1)
+ggplot(NOLA_Permits, aes(x=dummy.NumberDays,y=dummy.TotalFees)) + geom_point()
+ggplot(NOLA_Permits, aes(x=dummy.NumberDays,y=dummy.TotalFees)) + geom_point() +geom_smooth()
+
+##Graph 2: Graph of NumberDays and Total Inspections
+ggplot(NOLA_Permits, aes(x=NumberDays,y=TotalInspections)) + geom_point()
+ggplot(NOLA_Permits, aes(x=NumberDays,y=TotalInspections)) + geom_point() +geom_smooth()
+
+#Graph 2B: Attempting to correct data quality concerns
+dummy.TotalInspections<-log(NOLA_Permits$TotalInspections+1)
+ggplot(NOLA_Permits, aes(x=dummy.NumberDays,y=dummy.TotalInspections)) + geom_point()
+ggplot(NOLA_Permits, aes(x=dummy.NumberDays,y=dummy.TotalInspections)) + geom_point() +geom_smooth()
+
+##Graph 3: Graph of NumberDays and UnpaidFees
+ggplot(NOLA_Permits, aes(x=NumberDays,y=UnpaidFees)) + geom_point()
+ggplot(NOLA_Permits, aes(x=NumberDays,y=UnpaidFees)) + geom_point() +geom_smooth()
+
+#Graph 3B: Attempting to correct data quality concerns
+dummy.UnpaidFees<-log(NOLA_Permits$UnpaidFees+1)
+ggplot(NOLA_Permits, aes(x=dummy.NumberDays,y=dummy.UnpaidFees)) + geom_point()
+ggplot(NOLA_Permits, aes(x=dummy.NumberDays,y=dummy.UnpaidFees)) + geom_point() +geom_smooth()
+
+##Graph 4: Graph of NumberDays and BldgArea
+ggplot(NOLA_Permits, aes(x=NumberDays,y=BldgArea)) + geom_point()
+ggplot(NOLA_Permits, aes(x=NumberDays,y=BldgArea)) + geom_point() +geom_smooth()
+
+#Graph 4B: Attempting to correct data quality concerns
+dummy.BldgArea<-log(NOLA_Permits$BldgArea+1)
+ggplot(NOLA_Permits, aes(x=dummy.NumberDays,y=dummy.BldgArea)) + geom_point()
+ggplot(NOLA_Permits, aes(x=dummy.NumberDays,y=dummy.BldgArea)) + geom_point() +geom_smooth()
+
+##Graph 5: Graph of NumberDays and ConstrVal
+ggplot(NOLA_Permits, aes(x=NumberDays,y=ConstrVal)) + geom_point()
+ggplot(NOLA_Permits, aes(x=NumberDays,y=ConstrVal)) + geom_point() +geom_smooth()
+
+#Graph 5B: Attempting to correct data quality concerns
+dummy.ConstrVal<-log(NOLA_Permits$ConstrVal+1)
+dummy.NumberDays<-log(NOLA_Permits$NumberDays+1)
+ggplot(NOLA_Permits, aes(x=dummy.NumberDays,y=dummy.ConstrVal)) + geom_point()
+ggplot(NOLA_Permits, aes(x=dummy.NumberDays,y=dummy.ConstrVal)) + geom_point() +geom_smooth()
+
+
+###############Step 5: Concluding Regressions######################
+#Now that I have tested the correlation of the variables I will move toward developing the best fit
+#Recalling the regression of NumberDays and Total Fees
+
+reg2a       <- lm(NOLA_Permits$NumberDays ~ NOLA_Permits$TotalFees, data=NOLA_Permits)
+summary(reg2a)
+
+#Adding in TotalInspections Variable
+
+reg2b       <- lm(NOLA_Permits$NumberDays ~ NOLA_Permits$TotalFees+NOLA_Permits$TotalInspections, data=NOLA_Permits)
+summary(reg2b)
+
+#Adding in Code Variable
+
+reg2c       <- lm(NOLA_Permits$NumberDays ~ NOLA_Permits$TotalFees+NOLA_Permits$TotalInspections + ACCS_Code+BRAC_Code+CTOM_Code+CSSN_Code+CUSE_Code+DARV_Code+DEMI_Code+DEMO_Code+EANN_Code+ECOA_Code+EFAI_Code+EFLO_Code+EGEN_Code+EMER_Code+ERPR_Code+ERVW_Code+ESGN_Code+ETMP_Code+EVAC_Code+FAIR_Code+FGAS_Code+HOIS_Code+HOME_Code+HOOD_Code+HVAC_Code+LEAD_Code+LOOP_Code+MECH_Code+MMAN_Code+MOVG_Code+MOVS_Code+NEWC_Code+NOWK_Code+PKGL_Code+PLMB_Code+POOL_Code+POTF_Code+REPR_Code+RNVN_Code+RNVS_Code+ROTF_Code+RVWS_Code+SATT_Code+SBIL_Code+SBNR_Code+SERV_Code+SMRL_Code+SOLR_Code+STAG_Code+TRLR_Code, data=NOLA_Permits)
+summary(reg2c)
+
+#Adding in Unpaid Fees
+reg2d       <- lm(NOLA_Permits$NumberDays ~ NOLA_Permits$TotalFees+NOLA_Permits$TotalInspections + ACCS_Code+BRAC_Code+CTOM_Code+CSSN_Code+CUSE_Code+DARV_Code+DEMI_Code+DEMO_Code+EANN_Code+ECOA_Code+EFAI_Code+EFLO_Code+EGEN_Code+EMER_Code+ERPR_Code+ERVW_Code+ESGN_Code+ETMP_Code+EVAC_Code+FAIR_Code+FGAS_Code+HOIS_Code+HOME_Code+HOOD_Code+HVAC_Code+LEAD_Code+LOOP_Code+MECH_Code+MMAN_Code+MOVG_Code+MOVS_Code+NEWC_Code+NOWK_Code+PKGL_Code+PLMB_Code+POOL_Code+POTF_Code+REPR_Code+RNVN_Code+RNVS_Code+ROTF_Code+RVWS_Code+SATT_Code+SBIL_Code+SBNR_Code+SERV_Code+SMRL_Code+SOLR_Code+STAG_Code+TRLR_Code, +NOLA_Permits$UnpaidFees, data=NOLA_Permits)
+summary(reg2d)
+
+#Adding in BldgArea
+reg2e       <- lm(NOLA_Permits$NumberDays ~ NOLA_Permits$TotalFees+NOLA_Permits$TotalInspections + ACCS_Code+BRAC_Code+CTOM_Code+CSSN_Code+CUSE_Code+DARV_Code+DEMI_Code+DEMO_Code+EANN_Code+ECOA_Code+EFAI_Code+EFLO_Code+EGEN_Code+EMER_Code+ERPR_Code+ERVW_Code+ESGN_Code+ETMP_Code+EVAC_Code+FAIR_Code+FGAS_Code+HOIS_Code+HOME_Code+HOOD_Code+HVAC_Code+LEAD_Code+LOOP_Code+MECH_Code+MMAN_Code+MOVG_Code+MOVS_Code+NEWC_Code+NOWK_Code+PKGL_Code+PLMB_Code+POOL_Code+POTF_Code+REPR_Code+RNVN_Code+RNVS_Code+ROTF_Code+RVWS_Code+SATT_Code+SBIL_Code+SBNR_Code+SERV_Code+SMRL_Code+SOLR_Code+STAG_Code+TRLR_Code, +NOLA_Permits$UnpaidFees, +NOLA_Permits$BldgArea, data=NOLA_Permits)
+summary(reg2e)
+
+################Illustration of Data Concerns######################
+#Adding in ConstrVal
+reg2f       <- lm(NOLA_Permits$NumberDays ~ NOLA_Permits$TotalFees+NOLA_Permits$TotalInspections + ACCS_Code+BRAC_Code+CTOM_Code+CSSN_Code+CUSE_Code+DARV_Code+DEMI_Code+DEMO_Code+EANN_Code+ECOA_Code+EFAI_Code+EFLO_Code+EGEN_Code+EMER_Code+ERPR_Code+ERVW_Code+ESGN_Code+ETMP_Code+EVAC_Code+FAIR_Code+FGAS_Code+HOIS_Code+HOME_Code+HOOD_Code+HVAC_Code+LEAD_Code+LOOP_Code+MECH_Code+MMAN_Code+MOVG_Code+MOVS_Code+NEWC_Code+NOWK_Code+PKGL_Code+PLMB_Code+POOL_Code+POTF_Code+REPR_Code+RNVN_Code+RNVS_Code+ROTF_Code+RVWS_Code+SATT_Code+SBIL_Code+SBNR_Code+SERV_Code+SMRL_Code+SOLR_Code+STAG_Code+TRLR_Code +NOLA_Permits$UnpaidFees +NOLA_Permits$BldgArea +NOLA_Permits$ConstrVal, data=NOLA_Permits)
+summary(reg2f)
+
+#Adding in LandUse
+reg2h       <- lm(NOLA_Permits$NumberDays ~ NOLA_Permits$TotalFees+NOLA_Permits$TotalInspections + ACCS_Code+BRAC_Code+CTOM_Code+CSSN_Code+CUSE_Code+DARV_Code+DEMI_Code+DEMO_Code+EANN_Code+ECOA_Code+EFAI_Code+EFLO_Code+EGEN_Code+EMER_Code+ERPR_Code+ERVW_Code+ESGN_Code+ETMP_Code+EVAC_Code+FAIR_Code+FGAS_Code+HOIS_Code+HOME_Code+HOOD_Code+HVAC_Code+LEAD_Code+LOOP_Code+MECH_Code+MMAN_Code+MOVG_Code+MOVS_Code+NEWC_Code+NOWK_Code+PKGL_Code+PLMB_Code+POOL_Code+POTF_Code+REPR_Code+RNVN_Code+RNVS_Code+ROTF_Code+RVWS_Code+SATT_Code+SBIL_Code+SBNR_Code+SERV_Code+SMRL_Code+SOLR_Code+STAG_Code+TRLR_Code +NOLA_Permits$UnpaidFees +NOLA_Permits$BldgArea +NOLA_Permits$ConstrVal +NOLA_Permits$TotalInspections+ACC_LandUse+COMM_LandUse+HALF_LandUse+MIXD_LandUse+RMF_LandUse+RSF2_LandUse+RSFD_LandUse+SUMF_LandUse+UNK_LandUse)
+summary(reg2h)
+
+
+
+
+
+
+
